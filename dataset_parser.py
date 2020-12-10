@@ -217,7 +217,7 @@ def CreateDisponibilitateMagazin():
 
             added[(f, p)] = None
 
-            fout.write("INSERT INTO disponibilitatefurnizor VALUES(" +
+            fout.write("INSERT INTO disponibilitatemagazin VALUES(" +
                         str(p) + ", " + str(f) + ", " +
                         str(random.randint(1, 1000)) + ", " +
                         str(random.randint(-50, 50) + cost_produts[p]) +
