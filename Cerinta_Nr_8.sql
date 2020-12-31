@@ -107,3 +107,30 @@ FROM DUAL;
 -- Apelarea functiei cu un magazin care nu exista.
 SELECT CheckStockInStore(10, 1000, 30)
 FROM DUAL;
+
+
+-- Apelarea functiei cu date valide.
+SELECT CheckStockInStore(57, 1, 30)
+FROM DUAL
+UNION
+-- Apelarea functiei cu un user care nu este manager.
+SELECT CheckStockInStore(58, 1, 30)
+FROM DUAL
+UNION
+-- Apelarea functiei cu un produs care nu mai este disponibil.
+SELECT CheckStockInStore(57, 1, 56)
+FROM DUAL
+UNION
+-- Apelarea functiei cu un produs care nu exista.
+SELECT CheckStockInStore(57, 1, 10000)
+FROM DUAL
+UNION
+-- Apelarea functiei cu un user care nu exista.
+SELECT CheckStockInStore(1000, 1, 30)
+FROM DUAL
+UNION
+-- Apelarea functiei cu un magazin care nu exista.
+SELECT CheckStockInStore(10, 1000, 30)
+FROM DUAL;
+
+
