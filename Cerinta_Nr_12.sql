@@ -18,8 +18,6 @@ CREATE TABLE Informatii (
     NumeTabel       VARCHAR2(100),
     DataModificare  DATE);
 
-SELECT TO_CHAR(sysdate, 'HH24') FROM dual;
-
 CREATE OR REPLACE TRIGGER LoggerModificari
     AFTER CREATE OR DROP OR ALTER ON SCHEMA
 BEGIN 

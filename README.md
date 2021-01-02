@@ -720,9 +720,191 @@ Executia codului de mai sus da urmatorul rezultat:
 Codul se afla [aici](Cerinta_Nr_10.sql).
 
 ```SQL
+-- Autor: Moroianu Theodor
+-- Date: 22.12.2020
+-- Cerinta: Cerinta nr 10
+
+-- Pentru a asigura putina integritate in baza de date,
+-- compania doreste ca dupa orice modificare a structurii de 
+-- angajat / sef, sa se verifice daca toti angajatii raman 
+-- in continuare subordonati directi sau indirecti ai sefului.
+
+SET SERVEROUTPUT ON;
+
+CREATE OR REPLACE TRIGGER SubordonareIsATree
+    AFTER INSERT OR UPDATE OR DELETE ON Angajat
+DECLARE
+    sef_p           Angajat.AngajatID%TYPE;
+    numar_ang_p     BINARY_INTEGER;
+    numar_sub_p     BINARY_INTEGER;
+BEGIN
+    -- Numar real de angajati.
+    SELECT COUNT(1)
+        INTO numar_ang_p
+        FROM Angajat;
+    
+    -- Gasirea sefului suprem.
+    SELECT AngajatID
+        INTO sef_p
+        FROM Angajat
+        WHERE ManagerID IS NULL;
+        
+    -- Numar de subordonati.
+    SELECT COUNT(1)
+        INTO numar_sub_p
+        FROM Angajat
+        START WITH AngajatID = sef_p
+        CONNECT BY PRIOR AngajatID = ManagerID;
+    
+    -- Verif ca sunt egale.
+    IF numar_ang_p <> numar_sub_p THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Directorul nu este seful tuturor angajatilor!');
+    END IF;
+EXCEPTION
+    WHEN TOO_MANY_ROWS THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Exista mai multi angajati fara sef!');
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Nu exista angajati fara sef!');
+END;
+/
+
+-- Legal, cresc salariul.
+UPDATE Angajat
+    SET salariu = salariu + 10;
+
+-- Illegal, invalidez managerii. Nu exista angajat fara sef,
+-- ajungem in cazul 'NO_DATA_FOUND'.
+UPDATE Angajat
+    SET managerID = AngajatID;
+
+-- Illega, exista prea multi angajati fara sef.
+-- ajungem in cazul 'TOO_MANY_ROWS'.
+UPDATE Angajat
+    SET managerID = NULL;
+    
+-- Illegal, exista un ciclu undeva.
+UPDATE Angajat
+    SET managerID = 44
+    WHERE angajatID = 15;
+
+
+-- Sterg triggerul.
+DROP TRIGGER SubordonareIsATree;
+```
+
+Executia codului de mai sus da urmatorul rezultat:
+
+![](images/Ex10.png)
+
+
+## Cerinta 11 -- Trigger De Tip LMD La Nivel De Linie
+
+Codul se afla [aici](Cerinta_Nr_11.sql).
+
+```SQL
+-- Autor: Moroianu Theodor
+-- Date: 22.12.2020
+-- Cerinta: Cerinta nr 11
+
+-- Pentru a nu avea conflicte interne, directorul doreste
+-- ca la modificarea salariului unui angajat, acesta sa nu se modifice
+-- cu mai mult de 10%.
+-- Implementam un trigger care verifica fiecare modificare a bazei de date.
+
+SET SERVEROUTPUT ON;
+
+CREATE OR REPLACE TRIGGER SalaryIsFair
+    AFTER UPDATE ON Angajat
+FOR EACH ROW
+    WHEN (ABS((NEW.salariu - OLD.salariu) / OLD.salariu) > 0.1)
+BEGIN
+    RAISE_APPLICATION_ERROR(-20002, 'Angajatul ' || :NEW.nume || ' a fost modificat cu mai mult de 10%!');
+END;
+/
+
+-- Legal, cresc salariul angajatilor cu 5%.
+UPDATE Angajat
+    SET salariu = salariu * 105 / 100;
+
+--Ilegal, cresc prea mult.
+UPDATE Angajat
+    SET salariu = salariu * 115 / 100;
+    
+--Ilegal, scad prea mult.
+UPDATE Angajat
+    SET salariu = salariu * 80 / 100;
+    
+-- Sterg triggerul.
+DROP TRIGGER SalaryIsFair;
+```
+
+Executia codului de mai sus da urmatorul rezultat:
+
+![](images/Ex11.png)
+
+
+## Cerinta 12 -- Trigger De Tip LDD
+
+Codul se afla [aici](Cerinta_Nr_12.sql).
+
+```SQL
+-- Autor: Moroianu Theodor
+-- Date: 22.12.2020
+-- Cerinta: Cerinta nr 11
+
+-- Pentru a facilita gasirea problemelor in baza de date,
+-- se doreste crearea unui trigger, care sa salveze informatii
+-- despre eventuale modificari ale bazei de date.
+-- De asemenea, pentru a evita greseli datorate oboselii,
+-- se doreste ca adaugarea / stergerea / modificarea tabelelor
+-- sa nu fie posibila inafara programului de lucru (8:00 - 17:00).
+
+SET SERVEROUTPUT ON;
+
+CREATE TABLE Informatii (
+    Utilizator      VARCHAR2(100),
+    BazaDeDate      VARCHAR2(100),
+    Eveniment       VARCHAR2(100),
+    NumeTabel       VARCHAR2(100),
+    DataModificare  DATE);
+
+CREATE OR REPLACE TRIGGER LoggerModificari
+    AFTER CREATE OR DROP OR ALTER ON SCHEMA
+BEGIN 
+    -- Verific ca sunt permise modificarile.
+    IF TO_CHAR(sysdate, 'D') NOT BETWEEN 2 AND 6 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Nu se pot face astfel de operatii in Weekend!');
+    END IF;
+    IF TO_CHAR(sysdate, 'HH24') NOT BETWEEN 8 AND 17 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Nu se pot face astfel de operatii inafara orarului de lucru!');
+    END IF;
+    
+    INSERT INTO Informatii VALUES (
+            SYS.LOGIN_USER,
+            SYS.DATABASE_NAME,
+            SYS.SYSEVENT,
+            SYS.DICTIONARY_OBJ_NAME,
+            sysdate);
+END;
+/
+
+-- Creeam un tabel.
+CREATE TABLE Tabel (
+    ID  VARCHAR2(10)
+);
+
+-- Stergem tabelul.
+DROP TABLE Tabel;
+
+-- Vedem modificarile care sunt salvate in "Informatii".
+SELECT * FROM Informatii;
+
+-- Stergem tabelul "Informatii" si triggerul.
+DROP TRIGGER LoggerModificari;
+DROP TABLE Informatii;
 
 ```
 
 Executia codului de mai sus da urmatorul rezultat:
 
-![](images/Ex9.png)
+![](images/Ex12.png)
