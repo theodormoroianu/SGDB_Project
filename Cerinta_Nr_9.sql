@@ -6,7 +6,7 @@
 -- Astfel, pentru fiecare cumparator trebuie sa afisam urmatorul
 -- mesaj:
 -- "Draga XXXX, pe data de YYYY ai cumparat produsul ZZZZ la pretul VVV 
--- care are un review mediu de TTTT, si il poti cumpara la un pret de UUUU".
+-- care are un review mediu de TTTT, si il poti cumpara la un pret promotional de UUUU".
 -- Bine inteles, pentru a face un astfel de mesaj trebuie ca produsul
 -- sa aiba cel putin un review, si sa fie disponibil in cel putin un
 -- magazin.

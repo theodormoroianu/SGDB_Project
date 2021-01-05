@@ -12,7 +12,7 @@
 -- de CEO (pe ascuns, ca sa nu comenteze lumea ca e prea mic).
 -- Pe de alta parte, ca sa nu comenteze angajatii, trebuie sa
 -- fie premiati cel putin Y angajati.
--- Care sunt cele mai bune Z alegeri de premiere a angajatilor?
+-- Care este cea mai buna alegere de premiere a angajatilor?
 
 -- Subprogramul definit jos de tot, prin apeluri la functiile definite
 -- tot aici, foloseste cursoare implicite.

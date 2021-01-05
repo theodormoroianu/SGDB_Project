@@ -53,3 +53,6 @@ SELECT * FROM Informatii;
 DROP TRIGGER LoggerModificari;
 DROP TABLE Informatii;
 
+COMMIT;
+
+
