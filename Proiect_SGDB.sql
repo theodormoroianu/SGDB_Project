@@ -199,6 +199,7 @@ INSERT INTO disponibilitatemagazin VALUES(359, 5, 863, 949630);
 -- ....
 
 -- Tot fisierul poate fi gasit aici: https://github.com/theodormoroianu/SGDB_Project/blob/main/PopulateDataBase.sql
+-- Scriptul cu care a fost generat poate fi gasit aici: https://github.com/theodormoroianu/SGDB_Project/blob/main/dataset_parser.py
 
 -- Ex 6
 -- Autor: Moroianu Theodor
