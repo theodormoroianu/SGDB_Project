@@ -1,6 +1,6 @@
 -- Autor: Moroianu Theodor
 -- Date: 5.1.2021
--- Cerinta: Cerinta nr 8
+-- Cerinta: Cerinta nr 14
 
 -- Pachet care implementeaza o coada.
 

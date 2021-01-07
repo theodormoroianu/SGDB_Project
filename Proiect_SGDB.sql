@@ -1368,7 +1368,7 @@ EXECUTE PrintReviewMessages(793, 104);
 -- Cerinta 14 -- Implementarea In Oracle A Diagramei Conceptuale
 -- Autor: Moroianu Theodor
 -- Date: 5.1.2021
--- Cerinta: Cerinta nr 8
+-- Cerinta: Cerinta nr 14
 
 -- Pachet care implementeaza o coada.
 
